@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Book Listing App</string>
+    <string name="enter_book_name">Enter book name</string>
+    <string name="no_books_found">No books found, try another keyword</string>
+</resources>
