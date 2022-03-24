@@ -1,6 +1,5 @@
 package com.example.booklistingapp;
 
-import android.arch.lifecycle.ViewModelStoreOwner;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -60,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
                 else{
                     Log.v(LOG_TAG,"Valid query");
                     if (isNetworkAvailable()){
+                        //this will hide the already existing result, while user change the keyword ans search again, so that loading
+                        //animation is visible
+                        adapter.clear();
                         //showing the progress bar
                         mLoadingBar.setVisibility(View.VISIBLE);
                         mEmptyStateTextView.setVisibility(View.GONE);
