@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,11 +67,43 @@ public class MainActivity extends AppCompatActivity {
                         //showing the progress bar
                         mLoadingBar.setVisibility(View.VISIBLE);
                         mEmptyStateTextView.setVisibility(View.GONE);
-
-                        //call async task
                         //adding query to the url
                         String queryUrl = "" + BOOK_URL + query;
                         Log.v(LOG_TAG,"url is: "+ queryUrl);
+
+                        try {
+                            //checking which radio button is selected
+                            RadioGroup maxResult = (RadioGroup) findViewById(R.id.max_result_radio_group);
+                            int selectedRadioButtonId = maxResult.getCheckedRadioButtonId();
+                            int maxResult5Id = findViewById(R.id.max_result_5).getId();
+                            int maxResult10Id = findViewById(R.id.max_result_10).getId();
+                            int maxResult20Id = findViewById(R.id.max_result_20).getId();
+                            int maxResult40Id = findViewById(R.id.max_result_40).getId();
+                            if (selectedRadioButtonId == maxResult5Id) {
+                                //appending max result filter in to the query
+                                queryUrl = queryUrl + "&maxResults=5";
+                                Log.v(LOG_TAG,"selected radio button: 5");
+                            }
+                            else if (selectedRadioButtonId == maxResult10Id){
+                                //appending max result filter in to the query
+                                queryUrl = queryUrl + "&maxResults=10";
+                                Log.v(LOG_TAG,"selected radio button: 10");
+                            }
+                            else if (selectedRadioButtonId == maxResult20Id){
+                                //appending max result filter in to the query
+                                queryUrl = queryUrl + "&maxResults=20";
+                                Log.v(LOG_TAG,"selected radio button: 20");
+                            }
+                            else {
+                                //appending max result filter in to the query
+                                queryUrl = queryUrl + "&maxResults=40";
+                                Log.v(LOG_TAG,"selected radio button: 40");
+                            }
+                            Log.v(LOG_TAG,"url is: "+ queryUrl);
+                        }catch (RuntimeException e){
+                            Log.e(LOG_TAG,"Problem with finding id's of max result radio button");
+
+                        }
 
                         //calling background task
                         BookAsyncTask backgroundTask = new BookAsyncTask();
