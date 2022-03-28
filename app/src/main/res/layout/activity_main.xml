@@ -53,7 +53,6 @@
 
 
         <RadioButton
-            android:checked="true"
             android:id="@+id/max_result_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

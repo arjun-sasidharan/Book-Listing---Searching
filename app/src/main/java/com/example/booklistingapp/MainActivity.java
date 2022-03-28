@@ -2,10 +2,10 @@ package com.example.booklistingapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -28,15 +28,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * TODO: implement async task loader instead of async task
- * Steps
- * 1. Implement LoaderManager.Loader callback
- * 2. Implement abstract loader method like : onCreate loader, onLoadFinished etc
- * 3. initialize loader object by calling initloader method
- * 4. create a loader class which extends async task loader class
- * 5. override methods like loadInBackground, onStart, and create class constructor
- */
+
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Book>> {
 
     /**
@@ -53,10 +45,34 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private static final int BOOK_LOADER_ID = 1;
 
+    //Preference values
+    /**
+     * @param selectedRadioButtonId : to store previously selected max result radio button ID*/
+    private SharedPreferences mPreferences;
+    private String sharedPrefFile = "com.example.booklistingapp"; //package name gives as the name of the file, in which the preference is saved
+    private int selectedRadioButtonId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Initializing preference
+        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+        Log.v(LOG_TAG,"Restoring preference");
+        //Restoring preference
+        int defaultRadioButtonId = findViewById(R.id.max_result_10).getId(); //deafult radio button id
+        selectedRadioButtonId = mPreferences.getInt("RadioButton", defaultRadioButtonId); //sec arg is default value, if the key is not found
+        //try to update the layout to show the button id selected
+        try{
+            RadioButton selectedRadioBtnView = (RadioButton) findViewById(selectedRadioButtonId);
+            selectedRadioBtnView.toggle();
+            Log.v(LOG_TAG,"Radio Button Preference: " + selectedRadioBtnView.getText());
+        }catch (NullPointerException e){
+            Log.v(LOG_TAG, "No previous Preference", e);
+            RadioButton selectedRadioBtnView = (RadioButton) findViewById(defaultRadioButtonId);
+            selectedRadioBtnView.toggle();
+            Log.v(LOG_TAG, "selecting default radio button: " + selectedRadioBtnView.getText());
+        }
 
         //initializing the loader object
         if ( getSupportLoaderManager().getLoader(BOOK_LOADER_ID) != null){
@@ -103,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         try {
                             //checking which radio button is selected
                             RadioGroup maxResult = (RadioGroup) findViewById(R.id.max_result_radio_group);
-                            int selectedRadioButtonId = maxResult.getCheckedRadioButtonId();
+                            selectedRadioButtonId = maxResult.getCheckedRadioButtonId();
                             int maxResult5Id = findViewById(R.id.max_result_5).getId();
                             int maxResult10Id = findViewById(R.id.max_result_10).getId();
                             int maxResult20Id = findViewById(R.id.max_result_20).getId();
@@ -186,6 +202,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
 
+    }
+
+    //overriding onPause() method, to save the preference before destroying the app activity
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //saving shared preference
+        SharedPreferences.Editor preferenceEditor = mPreferences.edit();
+        preferenceEditor.putInt("RadioButton", selectedRadioButtonId);
+        Log.v(LOG_TAG,"Saving preference");
+        preferenceEditor.apply();
     }
 
     @NonNull
